@@ -14,13 +14,13 @@ class TaxiService extends Component {
         this.onVehicleSelect = this.onVehicleSelect.bind(this);
 
         this.state={
-            catagory:"",
-            vehicle:"",
+            selectedcategory:"",
+            selectedVehicle:"",
             duration:"",
 
             categories:[],
             vehicles:[],
-            optionCatagories:[],
+            options:[],
             optionVehicles:[],
             catagoryOptions:[],
 
@@ -42,26 +42,40 @@ class TaxiService extends Component {
                             }
                             data.push(category);
                         });
-                        this.setState({ catagoryOptions: data });
+                        this.setState({ options: data });
                     }
                 })
             })
     }
 
     onCategorySelect(e) {
-        console.log(e.target.value)
-        //todo:add the id to state
-        // this.setState({ selectedcategory: e ? e.map(item => item.value) : [] })
-        catagoryApi.catagory().getVehiclesForCatagory()
+
+        this.setState({ selectedcategory: e ? e.value : null })
+        let setCatagory ={
+            id:e.value
+        }
+        catagoryApi.catagory().getVehiclesForCatagory(setCatagory)
             .then((res)=>{
-                this.setState({vehicles:res.data})
+                this.setState({vehicles:res.data},()=>{
+                    if (this.state.vehicles.length > 0) {
+                        let data = [];
+                        this.state.vehicles.map(item => {
+                            let vehicles = {
+                                value: item._id,
+                                label: `${item.name}`
+                            }
+                            data.push(vehicles);
+                        });
+                        this.setState({ optionsVehicle: data });
+                    }
+                })
             })
             .catch((err)=>{
-                console.log(er.message)
+                console.log(err.message)
             })
     }
     onVehicleSelect(e) {
-        // this.setState({ selectedcategory: e ? e.map(item => item.value) : [] })
+        this.setState({ selectedVehicle: e ? e.value : null })
     }
 
     onChange(e) {
@@ -71,15 +85,14 @@ class TaxiService extends Component {
     onFormSubmit(e) {
         e.preventDefault();
         let trip = {
-            catagotyID:this.state.catagory,
+            catagotyID:this.state.selectedcategory,
             duration:this.state.duration,
-            vehicle:this.state.vehicle,
+            vehicle:this.state.selectedVehicle,
 
         }
-        console.log(trip)
         calculationAPI.taxi().calculate(trip)
             .then((res) => {
-                // alert('You have to pay : ' , res.)
+                console.log(res.data)
             })
             .catch((error) => {
                 alert(error.message)
@@ -89,35 +102,31 @@ class TaxiService extends Component {
     render() {
         return (
             <div>
+
                 <div className="container mt-5">
                     <h2>Taxi Service</h2>
                     <form onSubmit={this.onFormSubmit}>
 
                         <div className="mb-3">
-                            <label className="form-label">Select Category     :</label>
-                            //todo: options not being selected properly
+                            <label className="form-label">Category</label>
                             <Select
-                                options={this.state.catagoryOptions}
-                                isMulti
+                                options={this.state.options}
                                 className="basic-multi-select"
                                 onChange={this.onCategorySelect}
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Select Vehicle  :</label>
+                            <label className="form-label">Category</label>
                             <Select
-                                options={this.state.optionVehicles}
-                                isMulti
+                                options={this.state.optionsVehicle}
                                 className="basic-multi-select"
                                 onChange={this.onVehicleSelect}
                             />
-
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Duration</label>
-                            <input type="number" className="form-control" name="name" onChange={this.onChange} value={this.state.duration} />
+                            <input type="number" className="form-control" name="duration" onChange={this.onChange} value={this.state.duration} />
                         </div>
-
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </form>
                 </div>

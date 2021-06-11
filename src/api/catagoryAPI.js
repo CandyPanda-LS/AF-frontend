@@ -7,7 +7,8 @@ const catagoryApi = {
         return {
             insertCatagories: (catagory) => axios.post(baseUrl + "/api/Catagory",catagory),
             getAllCatagories: () => axios.get(baseUrl + "/api/Catagory"),
-            getVehiclesForCatagory: (catagory) => axios.get(baseUrl + "/api/Catagory/getVehiclesForCatagory", catagory),
+            getVehiclesForCatagory: (catagory) => axios.get(baseUrl + "/api/Catagory/getVehiclesForCatagory/"+catagory.id)
+
         };
     },
 };

@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const baseUrl = 'http://localhost:5000';
+const baseUrl = 'http://localhost:8081';
 
 const taxiServiceApi = {
     taxi() {
         return {
-            calculate: (trip) => axios.post(baseUrl + "/api/Vehicle", trip),
+            calculate: (trip) => axios.post(baseUrl + "/api/calculator", trip),
         };
     },
 };
